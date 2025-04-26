@@ -515,6 +515,68 @@ export class CPU {
             }
         }); // JP C,nn
         
+        // Add missing relative jump instructions
+        define(this.opcodes, 0x18, function() {
+            const offset = this.readByte(this.registers.pc++);
+            this.registers.pc &= 0xFFFF;
+            // Convert to signed offset (-128 to +127)
+            const signedOffset = (offset & 0x80) ? offset - 256 : offset;
+            this.registers.pc = (this.registers.pc + signedOffset) & 0xFFFF;
+            return 12;
+        });
+        
+        define(this.opcodes, 0x20, function() {
+            const offset = this.readByte(this.registers.pc++);
+            this.registers.pc &= 0xFFFF;
+            // Convert to signed offset (-128 to +127)
+            const signedOffset = (offset & 0x80) ? offset - 256 : offset;
+            
+            if (!this.getFlag('Z')) {
+                this.registers.pc = (this.registers.pc + signedOffset) & 0xFFFF;
+                return 12; // Branch taken: 12 cycles
+            }
+            return 8; // Branch not taken: 8 cycles
+        });
+        
+        define(this.opcodes, 0x28, function() {
+            const offset = this.readByte(this.registers.pc++);
+            this.registers.pc &= 0xFFFF;
+            // Convert to signed offset (-128 to +127)
+            const signedOffset = (offset & 0x80) ? offset - 256 : offset;
+            
+            if (this.getFlag('Z')) {
+                this.registers.pc = (this.registers.pc + signedOffset) & 0xFFFF;
+                return 12; // Branch taken: 12 cycles
+            }
+            return 8; // Branch not taken: 8 cycles
+        });
+        
+        define(this.opcodes, 0x30, function() {
+            const offset = this.readByte(this.registers.pc++);
+            this.registers.pc &= 0xFFFF;
+            // Convert to signed offset (-128 to +127)
+            const signedOffset = (offset & 0x80) ? offset - 256 : offset;
+            
+            if (!this.getFlag('C')) {
+                this.registers.pc = (this.registers.pc + signedOffset) & 0xFFFF;
+                return 12; // Branch taken: 12 cycles
+            }
+            return 8; // Branch not taken: 8 cycles
+        });
+        
+        define(this.opcodes, 0x38, function() {
+            const offset = this.readByte(this.registers.pc++);
+            this.registers.pc &= 0xFFFF;
+            // Convert to signed offset (-128 to +127)
+            const signedOffset = (offset & 0x80) ? offset - 256 : offset;
+            
+            if (this.getFlag('C')) {
+                this.registers.pc = (this.registers.pc + signedOffset) & 0xFFFF;
+                return 12; // Branch taken: 12 cycles
+            }
+            return 8; // Branch not taken: 8 cycles
+        });
+        
         // Control flow
         define(this.opcodes, 0xC3, function() { 
             this.registers.pc = this.readWord(this.registers.pc);
