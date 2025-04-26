@@ -314,6 +314,207 @@ export class CPU {
             return 8;
         }); // ADD A,n
         
+        // ADD 16-bit
+        define(this.opcodes, 0x09, function() { this.add16(this.bc); return 8; }); // ADD HL,BC
+        define(this.opcodes, 0x19, function() { this.add16(this.de); return 8; }); // ADD HL,DE
+        define(this.opcodes, 0x29, function() { this.add16(this.hl); return 8; }); // ADD HL,HL
+        define(this.opcodes, 0x39, function() { this.add16(this.registers.sp); return 8; }); // ADD HL,SP
+        
+        // ADC opcodes
+        define(this.opcodes, 0x88, function() { this.adc(this.registers.b); return 4; }); // ADC A,B
+        define(this.opcodes, 0x89, function() { this.adc(this.registers.c); return 4; }); // ADC A,C
+        define(this.opcodes, 0x8A, function() { this.adc(this.registers.d); return 4; }); // ADC A,D
+        define(this.opcodes, 0x8B, function() { this.adc(this.registers.e); return 4; }); // ADC A,E
+        define(this.opcodes, 0x8C, function() { this.adc(this.registers.h); return 4; }); // ADC A,H
+        define(this.opcodes, 0x8D, function() { this.adc(this.registers.l); return 4; }); // ADC A,L
+        define(this.opcodes, 0x8E, function() { this.adc(this.readByte(this.hl)); return 8; }); // ADC A,(HL)
+        define(this.opcodes, 0x8F, function() { this.adc(this.registers.a); return 4; }); // ADC A,A
+        define(this.opcodes, 0xCE, function() { 
+            const n = this.readByte(this.registers.pc++);
+            this.registers.pc &= 0xFFFF;
+            this.adc(n);
+            return 8;
+        }); // ADC A,n
+        
+        // SUB opcodes
+        define(this.opcodes, 0x90, function() { this.sub(this.registers.b); return 4; }); // SUB B
+        define(this.opcodes, 0x91, function() { this.sub(this.registers.c); return 4; }); // SUB C
+        define(this.opcodes, 0x92, function() { this.sub(this.registers.d); return 4; }); // SUB D
+        define(this.opcodes, 0x93, function() { this.sub(this.registers.e); return 4; }); // SUB E
+        define(this.opcodes, 0x94, function() { this.sub(this.registers.h); return 4; }); // SUB H
+        define(this.opcodes, 0x95, function() { this.sub(this.registers.l); return 4; }); // SUB L
+        define(this.opcodes, 0x96, function() { this.sub(this.readByte(this.hl)); return 8; }); // SUB (HL)
+        define(this.opcodes, 0x97, function() { this.sub(this.registers.a); return 4; }); // SUB A
+        define(this.opcodes, 0xD6, function() { 
+            const n = this.readByte(this.registers.pc++);
+            this.registers.pc &= 0xFFFF;
+            this.sub(n);
+            return 8;
+        }); // SUB n
+        
+        // SBC opcodes
+        define(this.opcodes, 0x98, function() { this.sbc(this.registers.b); return 4; }); // SBC A,B
+        define(this.opcodes, 0x99, function() { this.sbc(this.registers.c); return 4; }); // SBC A,C
+        define(this.opcodes, 0x9A, function() { this.sbc(this.registers.d); return 4; }); // SBC A,D
+        define(this.opcodes, 0x9B, function() { this.sbc(this.registers.e); return 4; }); // SBC A,E
+        define(this.opcodes, 0x9C, function() { this.sbc(this.registers.h); return 4; }); // SBC A,H
+        define(this.opcodes, 0x9D, function() { this.sbc(this.registers.l); return 4; }); // SBC A,L
+        define(this.opcodes, 0x9E, function() { this.sbc(this.readByte(this.hl)); return 8; }); // SBC A,(HL)
+        define(this.opcodes, 0x9F, function() { this.sbc(this.registers.a); return 4; }); // SBC A,A
+        define(this.opcodes, 0xDE, function() { 
+            const n = this.readByte(this.registers.pc++);
+            this.registers.pc &= 0xFFFF;
+            this.sbc(n);
+            return 8;
+        }); // SBC A,n
+        
+        // AND opcodes
+        define(this.opcodes, 0xA0, function() { this.and(this.registers.b); return 4; }); // AND B
+        define(this.opcodes, 0xA1, function() { this.and(this.registers.c); return 4; }); // AND C
+        define(this.opcodes, 0xA2, function() { this.and(this.registers.d); return 4; }); // AND D
+        define(this.opcodes, 0xA3, function() { this.and(this.registers.e); return 4; }); // AND E
+        define(this.opcodes, 0xA4, function() { this.and(this.registers.h); return 4; }); // AND H
+        define(this.opcodes, 0xA5, function() { this.and(this.registers.l); return 4; }); // AND L
+        define(this.opcodes, 0xA6, function() { this.and(this.readByte(this.hl)); return 8; }); // AND (HL)
+        define(this.opcodes, 0xA7, function() { this.and(this.registers.a); return 4; }); // AND A
+        define(this.opcodes, 0xE6, function() { 
+            const n = this.readByte(this.registers.pc++);
+            this.registers.pc &= 0xFFFF;
+            this.and(n);
+            return 8;
+        }); // AND n
+        
+        // XOR opcodes
+        define(this.opcodes, 0xA8, function() { this.xor(this.registers.b); return 4; }); // XOR B
+        define(this.opcodes, 0xA9, function() { this.xor(this.registers.c); return 4; }); // XOR C
+        define(this.opcodes, 0xAA, function() { this.xor(this.registers.d); return 4; }); // XOR D
+        define(this.opcodes, 0xAB, function() { this.xor(this.registers.e); return 4; }); // XOR E
+        define(this.opcodes, 0xAC, function() { this.xor(this.registers.h); return 4; }); // XOR H
+        define(this.opcodes, 0xAD, function() { this.xor(this.registers.l); return 4; }); // XOR L
+        define(this.opcodes, 0xAE, function() { this.xor(this.readByte(this.hl)); return 8; }); // XOR (HL)
+        define(this.opcodes, 0xAF, function() { this.xor(this.registers.a); return 4; }); // XOR A
+        define(this.opcodes, 0xEE, function() { 
+            const n = this.readByte(this.registers.pc++);
+            this.registers.pc &= 0xFFFF;
+            this.xor(n);
+            return 8;
+        }); // XOR n
+        
+        // OR opcodes
+        define(this.opcodes, 0xB0, function() { this.or(this.registers.b); return 4; }); // OR B
+        define(this.opcodes, 0xB1, function() { this.or(this.registers.c); return 4; }); // OR C
+        define(this.opcodes, 0xB2, function() { this.or(this.registers.d); return 4; }); // OR D
+        define(this.opcodes, 0xB3, function() { this.or(this.registers.e); return 4; }); // OR E
+        define(this.opcodes, 0xB4, function() { this.or(this.registers.h); return 4; }); // OR H
+        define(this.opcodes, 0xB5, function() { this.or(this.registers.l); return 4; }); // OR L
+        define(this.opcodes, 0xB6, function() { this.or(this.readByte(this.hl)); return 8; }); // OR (HL)
+        define(this.opcodes, 0xB7, function() { this.or(this.registers.a); return 4; }); // OR A
+        define(this.opcodes, 0xF6, function() { 
+            const n = this.readByte(this.registers.pc++);
+            this.registers.pc &= 0xFFFF;
+            this.or(n);
+            return 8;
+        }); // OR n
+        
+        // CP opcodes (compare with A but don't store result)
+        define(this.opcodes, 0xB8, function() { this.cp(this.registers.b); return 4; }); // CP B
+        define(this.opcodes, 0xB9, function() { this.cp(this.registers.c); return 4; }); // CP C
+        define(this.opcodes, 0xBA, function() { this.cp(this.registers.d); return 4; }); // CP D
+        define(this.opcodes, 0xBB, function() { this.cp(this.registers.e); return 4; }); // CP E
+        define(this.opcodes, 0xBC, function() { this.cp(this.registers.h); return 4; }); // CP H
+        define(this.opcodes, 0xBD, function() { this.cp(this.registers.l); return 4; }); // CP L
+        define(this.opcodes, 0xBE, function() { this.cp(this.readByte(this.hl)); return 8; }); // CP (HL)
+        define(this.opcodes, 0xBF, function() { this.cp(this.registers.a); return 4; }); // CP A
+        define(this.opcodes, 0xFE, function() { 
+            const n = this.readByte(this.registers.pc++);
+            this.registers.pc &= 0xFFFF;
+            this.cp(n);
+            return 8;
+        }); // CP n
+        
+        // INC opcodes (8-bit)
+        define(this.opcodes, 0x04, function() { this.inc8(0); return 4; }); // INC B
+        define(this.opcodes, 0x0C, function() { this.inc8(1); return 4; }); // INC C
+        define(this.opcodes, 0x14, function() { this.inc8(2); return 4; }); // INC D
+        define(this.opcodes, 0x1C, function() { this.inc8(3); return 4; }); // INC E
+        define(this.opcodes, 0x24, function() { this.inc8(4); return 4; }); // INC H
+        define(this.opcodes, 0x2C, function() { this.inc8(5); return 4; }); // INC L
+        define(this.opcodes, 0x34, function() { 
+            const val = this.readByte(this.hl);
+            const result = this.inc8Value(val);
+            this.writeByte(this.hl, result);
+            return 12; 
+        }); // INC (HL)
+        define(this.opcodes, 0x3C, function() { this.inc8(7); return 4; }); // INC A
+        
+        // DEC opcodes (8-bit)
+        define(this.opcodes, 0x05, function() { this.dec8(0); return 4; }); // DEC B
+        define(this.opcodes, 0x0D, function() { this.dec8(1); return 4; }); // DEC C
+        define(this.opcodes, 0x15, function() { this.dec8(2); return 4; }); // DEC D
+        define(this.opcodes, 0x1D, function() { this.dec8(3); return 4; }); // DEC E
+        define(this.opcodes, 0x25, function() { this.dec8(4); return 4; }); // DEC H
+        define(this.opcodes, 0x2D, function() { this.dec8(5); return 4; }); // DEC L
+        define(this.opcodes, 0x35, function() { 
+            const val = this.readByte(this.hl);
+            const result = this.dec8Value(val);
+            this.writeByte(this.hl, result);
+            return 12; 
+        }); // DEC (HL)
+        define(this.opcodes, 0x3D, function() { this.dec8(7); return 4; }); // DEC A
+        
+        // INC opcodes (16-bit)
+        define(this.opcodes, 0x03, function() { this.bc = (this.bc + 1) & 0xFFFF; return 8; }); // INC BC
+        define(this.opcodes, 0x13, function() { this.de = (this.de + 1) & 0xFFFF; return 8; }); // INC DE
+        define(this.opcodes, 0x23, function() { this.hl = (this.hl + 1) & 0xFFFF; return 8; }); // INC HL
+        define(this.opcodes, 0x33, function() { this.registers.sp = (this.registers.sp + 1) & 0xFFFF; return 8; }); // INC SP
+        
+        // DEC opcodes (16-bit)
+        define(this.opcodes, 0x0B, function() { this.bc = (this.bc - 1) & 0xFFFF; return 8; }); // DEC BC
+        define(this.opcodes, 0x1B, function() { this.de = (this.de - 1) & 0xFFFF; return 8; }); // DEC DE
+        define(this.opcodes, 0x2B, function() { this.hl = (this.hl - 1) & 0xFFFF; return 8; }); // DEC HL
+        define(this.opcodes, 0x3B, function() { this.registers.sp = (this.registers.sp - 1) & 0xFFFF; return 8; }); // DEC SP
+        
+        // Conditional jumps
+        define(this.opcodes, 0xC2, function() {
+            if (!this.getFlag('Z')) {
+                this.registers.pc = this.readWord(this.registers.pc);
+                return 16;
+            } else {
+                this.registers.pc = (this.registers.pc + 2) & 0xFFFF;
+                return 12;
+            }
+        }); // JP NZ,nn
+        
+        define(this.opcodes, 0xCA, function() {
+            if (this.getFlag('Z')) {
+                this.registers.pc = this.readWord(this.registers.pc);
+                return 16;
+            } else {
+                this.registers.pc = (this.registers.pc + 2) & 0xFFFF;
+                return 12;
+            }
+        }); // JP Z,nn
+        
+        define(this.opcodes, 0xD2, function() {
+            if (!this.getFlag('C')) {
+                this.registers.pc = this.readWord(this.registers.pc);
+                return 16;
+            } else {
+                this.registers.pc = (this.registers.pc + 2) & 0xFFFF;
+                return 12;
+            }
+        }); // JP NC,nn
+        
+        define(this.opcodes, 0xDA, function() {
+            if (this.getFlag('C')) {
+                this.registers.pc = this.readWord(this.registers.pc);
+                return 16;
+            } else {
+                this.registers.pc = (this.registers.pc + 2) & 0xFFFF;
+                return 12;
+            }
+        }); // JP C,nn
+        
         // Control flow
         define(this.opcodes, 0xC3, function() { 
             this.registers.pc = this.readWord(this.registers.pc);
@@ -342,17 +543,6 @@ export class CPU {
         define(this.opcodes, 0xEF, function() { this.pushWord(this.registers.pc); this.registers.pc = 0x28; return 16; }); // RST 28h
         define(this.opcodes, 0xF7, function() { this.pushWord(this.registers.pc); this.registers.pc = 0x30; return 16; }); // RST 30h
         define(this.opcodes, 0xFF, function() { this.pushWord(this.registers.pc); this.registers.pc = 0x38; return 16; }); // RST 38h
-        
-        // Conditional jumps
-        define(this.opcodes, 0xC2, function() {
-            if (!this.getFlag('Z')) {
-                this.registers.pc = this.readWord(this.registers.pc);
-                return 16;
-            } else {
-                this.registers.pc = (this.registers.pc + 2) & 0xFFFF;
-                return 12;
-            }
-        }); // JP NZ,nn
         
         // Interrupts
         define(this.opcodes, 0xF3, function() { this.ime = false; return 4; }); // DI
@@ -428,6 +618,130 @@ export class CPU {
         this.setFlag('C', result > 0xFF);
         
         this.registers.a = result & 0xFF;
+    }
+    
+    add16(value) {
+        const hl = this.hl;
+        const result = hl + value;
+        
+        this.setFlag('N', false);
+        this.setFlag('H', ((hl & 0x0FFF) + (value & 0x0FFF)) > 0x0FFF);
+        this.setFlag('C', result > 0xFFFF);
+        
+        this.hl = result & 0xFFFF;
+    }
+    
+    adc(value) {
+        const a = this.registers.a;
+        const carry = this.getFlag('C') ? 1 : 0;
+        const result = a + value + carry;
+        
+        this.setFlag('Z', (result & 0xFF) === 0);
+        this.setFlag('N', false);
+        this.setFlag('H', ((a & 0x0F) + (value & 0x0F) + carry) > 0x0F);
+        this.setFlag('C', result > 0xFF);
+        
+        this.registers.a = result & 0xFF;
+    }
+    
+    sub(value) {
+        const a = this.registers.a;
+        const result = a - value;
+        
+        this.setFlag('Z', (result & 0xFF) === 0);
+        this.setFlag('N', true);
+        this.setFlag('H', ((a & 0x0F) - (value & 0x0F)) < 0);
+        this.setFlag('C', result < 0);
+        
+        this.registers.a = result & 0xFF;
+    }
+    
+    sbc(value) {
+        const a = this.registers.a;
+        const carry = this.getFlag('C') ? 1 : 0;
+        const result = a - value - carry;
+        
+        this.setFlag('Z', (result & 0xFF) === 0);
+        this.setFlag('N', true);
+        this.setFlag('H', ((a & 0x0F) - (value & 0x0F) - carry) < 0);
+        this.setFlag('C', result < 0);
+        
+        this.registers.a = result & 0xFF;
+    }
+    
+    and(value) {
+        const result = this.registers.a & value;
+        
+        this.setFlag('Z', result === 0);
+        this.setFlag('N', false);
+        this.setFlag('H', true);
+        this.setFlag('C', false);
+        
+        this.registers.a = result;
+    }
+    
+    xor(value) {
+        const result = this.registers.a ^ value;
+        
+        this.setFlag('Z', result === 0);
+        this.setFlag('N', false);
+        this.setFlag('H', false);
+        this.setFlag('C', false);
+        
+        this.registers.a = result;
+    }
+    
+    or(value) {
+        const result = this.registers.a | value;
+        
+        this.setFlag('Z', result === 0);
+        this.setFlag('N', false);
+        this.setFlag('H', false);
+        this.setFlag('C', false);
+        
+        this.registers.a = result;
+    }
+    
+    cp(value) {
+        const a = this.registers.a;
+        const result = a - value;
+        
+        this.setFlag('Z', (result & 0xFF) === 0);
+        this.setFlag('N', true);
+        this.setFlag('H', ((a & 0x0F) - (value & 0x0F)) < 0);
+        this.setFlag('C', result < 0);
+    }
+    
+    inc8(regIndex) {
+        const value = this.getRegisterValue(regIndex);
+        const result = this.inc8Value(value);
+        this.setRegisterValue(regIndex, result);
+    }
+    
+    inc8Value(value) {
+        const result = (value + 1) & 0xFF;
+        
+        this.setFlag('Z', result === 0);
+        this.setFlag('N', false);
+        this.setFlag('H', (value & 0x0F) === 0x0F);
+        
+        return result;
+    }
+    
+    dec8(regIndex) {
+        const value = this.getRegisterValue(regIndex);
+        const result = this.dec8Value(value);
+        this.setRegisterValue(regIndex, result);
+    }
+    
+    dec8Value(value) {
+        const result = (value - 1) & 0xFF;
+        
+        this.setFlag('Z', result === 0);
+        this.setFlag('N', true);
+        this.setFlag('H', (value & 0x0F) === 0);
+        
+        return result;
     }
     
     // Implementation of bit operations
