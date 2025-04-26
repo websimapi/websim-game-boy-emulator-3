@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Boy Emulator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .gameboy {
+            background-color: #8b8c7a;
+            border-radius: 15px 15px 50px 15px;
+            padding: 20px 20px 50px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .screen-area {
+            background-color: #181818;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        #screen {
+            background-color: #9bbc0f;
+            image-rendering: pixelated;
+            width: 320px; /* Scaled up from 160x144 */
+            height: 288px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            grid-template-rows: 100px 100px 100px;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .dpad {
+            grid-column: 1;
+            grid-row: 1 / span 3;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+        }
+        
+        .buttons {
+            grid-column: 3;
+            grid-row: 1 / span 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .action-buttons {
+            display: flex;
+            margin-top: 20px;
+        }
+        
+        .button {
+            border-radius: 50%;
+            background-color: #4a3335;
+            box-shadow: 0 5px 0 #36262d;
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+        }
+        
+        .dpad-btn {
+            width: 30px;
+            height: 30px;
+            background-color: #1e1e1e;
+            box-shadow: 0 3px 0 #000;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        
+        #up {
+            grid-column: 2;
+            grid-row: 1;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        #left {
+            grid-column: 1;
+            grid-row: 2;
+            border-radius: 5px 0 0 5px;
+        }
+        
+        #center {
+            grid-column: 2;
+            grid-row: 2;
+            background-color: #1e1e1e;
+            box-shadow: none;
+        }
+        
+        #right {
+            grid-column: 3;
+            grid-row: 2;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        #down {
+            grid-column: 2;
+            grid-row: 3;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .start-select {
+            grid-column: 2;
+            grid-row: 3;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .menu-btn {
+            background-color: #666;
+            border-radius: 10px;
+            width: 60px;
+            height: 10px;
+            transform: rotate(-25deg);
+            margin: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 0 #333;
+        }
+        
+        .drop-area {
+            border: 3px dashed #aaa;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            background-color: #f9f9f9;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .drop-area:hover {
+            background-color: #eee;
+        }
+        
+        .rom-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+        }
+        
+        #debug {
+            font-family: monospace;
+            text-align: left;
+            background-color: #1e1e1e;
+            color: #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            width: 320px;
+            height: 100px;
+            overflow-y: auto;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Boy Emulator</h1>
+    
+    <div class="gameboy">
+        <div class="screen-area">
+            <canvas id="screen" width="160" height="144"></canvas>
+        </div>
+        
+        <div class="controls">
+            <div class="dpad">
+                <div class="dpad-btn" id="up">↑</div>
+                <div class="dpad-btn" id="left">←</div>
+                <div class="dpad-btn" id="center"></div>
+                <div class="dpad-btn" id="right">→</div>
+                <div class="dpad-btn" id="down">↓</div>
+            </div>
+            
+            <div class="start-select">
+                <div>
+                    <div class="menu-btn" id="select"></div>
+                    <div style="font-size: 12px; margin-top: 5px;">SELECT</div>
+                </div>
+                <div>
+                    <div class="menu-btn" id="start"></div>
+                    <div style="font-size: 12px; margin-top: 5px;">START</div>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <div class="action-buttons">
+                    <div class="button" id="b">B</div>
+                    <div class="button" id="a">A</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="drop-area" id="drop-area">
+        <p>Drop your Game Boy ROM (.gb file) here</p>
+        <p>or</p>
+        <input type="file" id="rom-input" accept=".gb">
+    </div>
+    
+    <div class="rom-info" id="rom-info" style="display: none;">
+        <h3>ROM Info</h3>
+        <div id="rom-details"></div>
+    </div>
+    
+    <div id="debug"></div>
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "jszip": "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"
+        }
+    }
+    </script>
+    <script type="module" src="js/main.js"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4c6229722a6346bc8eb5cb0e5eae5d41","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
+
