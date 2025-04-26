@@ -216,14 +216,11 @@ export class CPU {
             opcodes[code] = handler;
         };
         
+        // 0x00: NOP - No operation
+        define(this.opcodes, 0x00, function() { return 4; }); // NOP takes 4 cycles
+        
         // 8-bit loads
         define(this.opcodes, 0x06, function() { this.registers.b = this.readByte(this.registers.pc++); this.registers.pc &= 0xFFFF; return 8; }); // LD B,n
-        define(this.opcodes, 0x0E, function() { this.registers.c = this.readByte(this.registers.pc++); this.registers.pc &= 0xFFFF; return 8; }); // LD C,n
-        define(this.opcodes, 0x16, function() { this.registers.d = this.readByte(this.registers.pc++); this.registers.pc &= 0xFFFF; return 8; }); // LD D,n
-        define(this.opcodes, 0x1E, function() { this.registers.e = this.readByte(this.registers.pc++); this.registers.pc &= 0xFFFF; return 8; }); // LD E,n
-        define(this.opcodes, 0x26, function() { this.registers.h = this.readByte(this.registers.pc++); this.registers.pc &= 0xFFFF; return 8; }); // LD H,n
-        define(this.opcodes, 0x2E, function() { this.registers.l = this.readByte(this.registers.pc++); this.registers.pc &= 0xFFFF; return 8; }); // LD L,n
-        define(this.opcodes, 0x3E, function() { this.registers.a = this.readByte(this.registers.pc++); this.registers.pc &= 0xFFFF; return 8; }); // LD A,n
         
         // LD r1,r2 instructions
         define(this.opcodes, 0x7F, function() { this.registers.a = this.registers.a; return 4; }); // LD A,A
@@ -242,8 +239,6 @@ export class CPU {
         define(this.opcodes, 0x44, function() { this.registers.b = this.registers.h; return 4; }); // LD B,H
         define(this.opcodes, 0x45, function() { this.registers.b = this.registers.l; return 4; }); // LD B,L
         define(this.opcodes, 0x46, function() { this.registers.b = this.readByte(this.hl); return 8; }); // LD B,(HL)
-        
-        // ...and so on for all register-to-register loads
         
         // Load from (HL) to register
         define(this.opcodes, 0x46, function() { this.registers.b = this.readByte(this.hl); return 8; }); // LD B,(HL)
@@ -319,8 +314,6 @@ export class CPU {
             return 8;
         }); // ADD A,n
         
-        // ... more opcodes for all instructions
-        
         // Control flow
         define(this.opcodes, 0xC3, function() { 
             this.registers.pc = this.readWord(this.registers.pc);
@@ -360,8 +353,6 @@ export class CPU {
                 return 12;
             }
         }); // JP NZ,nn
-        
-        // ... and many more instructions
         
         // Interrupts
         define(this.opcodes, 0xF3, function() { this.ime = false; return 4; }); // DI
@@ -598,4 +589,3 @@ export class CPU {
         }
     }
 }
-
